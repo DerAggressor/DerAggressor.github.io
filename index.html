@@ -3,9 +3,34 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            
+        </style>
     </head>
 
     <body>
-        <h1>TESTLANDing</h1>
+        <h1>Moin Christos.</h1>
+        <h2>no stress!</h2>
+        <div class="container">
+            <h3>background color: <span class="color">#f1f5f8</span></h3>
+            <button class="btn btn-hero" id="btn">click me</button>
+        </div>
+        <script>
+            const hex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+            const btn = document.getElementById('btn');
+            const color = document.querySelector('.color');
+            btn.addEventListener('click', function (){
+                let hexcolor = '#';
+                for ( let i = 0; i<6; i++){
+                    hexcolor += hex[getRandomArryItem(hex.length)];
+                    color.textContent = hexcolor;
+                    document.body.style.backgroundColor = hexcolor
+                }
+                });
+
+            getRandomArryItem = (arrayLength) => {
+            return Math.floor(Math.random() * arrayLength);
+            }
+        </script>
     </body>
 </html>
