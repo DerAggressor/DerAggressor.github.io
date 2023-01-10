@@ -3,22 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            
-        </style>
     </head>
 
     <body>
         <h1>Moin Besucher:in.</h1>
-        <h2>no stress!</h2>
         <canvas></canvas>
         <script>
+	    
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
 canvas.width = 1024;
 canvas.height = 576;
-const gravity = 0.3;
+const gravity = 0.7;
 
 class Sprite{
 	constructor({position, velocity}){
@@ -27,24 +24,24 @@ class Sprite{
 		this.height = 120;
 		this.width = 50;
 		this.lastKey;
+		this.jumpheight = -15;
+		this.jumps = 2;
 		
 	}
-	draw(){
-		c.fillStyle = 'red';
-		c.fillRect(this.position.x, this.position.y, this.width, this.height);
+draw(){
+	c.fillStyle = 'red';
+	c.fillRect(this.position.x, this.position.y, this.width, this.height);
+}
+update(){
+	this.draw();
+	this.position.y += this.velocity.y;
+	this.position.x += this.velocity.x;
+	if (this.position.y + this.height + this.velocity.y > canvas.height){
+		this.velocity.y = 0;
+	} else{
+		this.velocity.y += gravity;
 	}
-	update(){
-		this.draw();
-		
-		this.position.y += this.velocity.y;
-		this.position.x += this.velocity.x;
-		
-		if (this.position.y + this.height + this.velocity.y > canvas.height){
-			this.velocity.y = 0;
-		} else{
-			this.velocity.y += gravity;
-		}
-	}
+}
 }
 
 const player = new Sprite({
@@ -103,19 +100,38 @@ function animate(){
 	player.update();
 	enemy.update()
 	
+//player movement
 	player.velocity.x = 0;
+	//jumping
+	if (player.position.y + player.height >= canvas.height){
+		player.jumps = 2;
+	}
+	//walking
 	if (keys.a.pressed && player.lastKey === 'a'){
-		player.velocity.x = -1;
+		player.velocity.x = -5;
 	} else if (keys.d.pressed && player.lastKey === 'd') {
-		player.velocity.x = 2;
+		player.velocity.x = 5;
+	} 
+
+	
+	//enemy movement
+	enemy.velocity.x = 0;
+	//jumping
+	if (enemy.position.y + enemy.height >= canvas.height){
+		enemy.jumps = 2;
+	}
+	if(keys.ArrowLeft.pressed && enemy.lastKey ==='ArrowLeft'){
+		enemy.velocity.x = -5;
+	} else if (keys.ArrowRight.pressed && enemy.lastKey ==='ArrowRight'){
+		enemy.velocity.x = 5;
 	}
 
 }
 animate();
 
 window.addEventListener('keydown', (event) => {
-	//console.log(event.key);
 	switch (event.key) {
+		//player
 		case 'd':
 			keys.d.pressed = true;
 			player.lastKey = 'd';
@@ -125,13 +141,17 @@ window.addEventListener('keydown', (event) => {
 			player.lastKey = 'a';
 			break;
 		case 'w':
-			player.velocity.y = -10;
+			if (player.jumps > 0){
+				player.velocity.y = player.jumpheight;
+				player.jumps -= 1;
+			} 
 			break;
 		case 's':
 			keys.s.pressed = true;
 			player.lastKey = 's';
 			break;
 			
+		//enemy
 		case 'ArrowRight':
 			keys.ArrowRight.pressed = true;
 			enemy.lastKey = 'ArrowRight';
@@ -141,17 +161,21 @@ window.addEventListener('keydown', (event) => {
 			enemy.lastKey = 'ArrowLeft';
 			break;
 		case 'ArrowUp':
-			enemy.velocity.y = -10;
+			if (enemy.jumps > 0){
+				enemy.velocity.y = enemy.jumpheight;
+				enemy.jumps -= 1;
+			}
 			break;
 		case 'ArrowDown':
 			keys.ArrowDown.pressed = true;
 			enemy.lastKey = 'ArrowDown';
 			break;
 	}
-	console.log(event);
+	//console.log(event);
 });
 window.addEventListener('keyup',(event) => {
 	switch (event.key) {
+		//player 
 		case 'd': 
 			keys.d.pressed = false;
 			break;
@@ -164,18 +188,19 @@ window.addEventListener('keyup',(event) => {
 		case 's':
 			keys.s.pressed = false;
 			break;
-			
+		
+		//enemy
 		case 'ArrowRight': 
-			keys.d.pressed = false;
+			keys.ArrowRight.pressed = false;
 			break;
 		case 'ArrowLeft':
-			keys.a.pressed = false;
+			keys.ArrowLeft.pressed = false;
 			break;
 		case 'ArrowUp':
-			keys.w.pressed = false;
+			keys.ArrowUp.pressed = false;
 			break;
 		case 'ArrowDown':
-			keys.s.pressed = false;
+			keys.ArrowDown.pressed = false;
 			break;
 	}
 });
@@ -203,7 +228,8 @@ Healthbar Interface{
 Game Timer and Game Over{
 			- 
 }
-*/</script>
+*/
+	    </script>
         <div class="container">
             <h3>background color: <span class="color">#f1f5f8</span></h3>
             <button class="btn btn-hero" id="btn">click me</button>
